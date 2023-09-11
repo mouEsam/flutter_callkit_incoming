@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.NonNull
+import androidx.annotation.Nullable
+
 import com.hiennv.flutter_callkit_incoming.Utils.Companion.reapCollection
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -52,11 +54,12 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
             }
         }
 
+
         fun sharePluginWithRegister(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
             initSharedInstance(flutterPluginBinding.applicationContext, flutterPluginBinding.binaryMessenger)
         }
 
-        private fun initSharedInstance(context: Context, binaryMessenger: BinaryMessenger) {
+        fun initSharedInstance(context: Context, binaryMessenger: BinaryMessenger) {
             if (!::instance.isInitialized) {
                 instance = FlutterCallkitIncomingPlugin()
                 instance.callkitNotificationManager = CallkitNotificationManager(context)
@@ -134,6 +137,12 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
         removeAllCalls(context)
     }
 
+    public fun sendEventCustom(body: Map<String, Any>) {
+        eventHandlers.reapCollection().forEach {
+            it.get()?.send(CallkitConstants.ACTION_CALL_CUSTOM, body)
+        }
+    }
+
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         try {
             when (call.method) {
@@ -193,6 +202,9 @@ class FlutterCallkitIncomingPlugin : FlutterPlugin, MethodCallHandler, ActivityA
                             data.toBundle()
                         )
                     )
+                    result.success("OK")
+                }
+                "callConnected" -> {
                     result.success("OK")
                 }
                 "endAllCalls" -> {

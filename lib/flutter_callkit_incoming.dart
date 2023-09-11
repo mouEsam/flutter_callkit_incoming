@@ -9,12 +9,13 @@ import 'entities/entities.dart';
 /// * startCall(dynamic)
 /// * endCall(dynamic)
 /// * endAllCalls()
+/// * callConnected(dynamic)
 
 class FlutterCallkitIncoming {
   static const MethodChannel _channel =
-      const MethodChannel('flutter_callkit_incoming');
+      MethodChannel('flutter_callkit_incoming');
   static const EventChannel _eventChannel =
-      const EventChannel('flutter_callkit_incoming_events');
+      EventChannel('flutter_callkit_incoming_events');
 
   /// Listen to event callback from [FlutterCallkitIncoming].
   ///
@@ -74,6 +75,13 @@ class FlutterCallkitIncoming {
   /// On Android, Nothing(only callback event listener).
   static Future endCall(String id) async {
     await _channel.invokeMethod("endCall", {'id': id});
+  }
+
+  /// Set call has been connected successfully.
+  /// On iOS, using Callkit(update a history into the Phone app).
+  /// On Android, Nothing(only callback event listener).
+  static Future setCallConnected(String id) async {
+    await _channel.invokeMethod("callConnected", {'id': id});
   }
 
   /// End all calls.
